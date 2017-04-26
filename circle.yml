@@ -1,0 +1,31 @@
+machine:
+  node:
+    version: 7.8.0
+
+deployment:
+  staging:
+    branch: master
+    heroku:
+      appname: loop-sample
+
+dependencies:
+  override:
+    - yarn
+  cache_directories:
+    - ~/.cache/yarn
+
+test:
+  pre:
+    - mkdir -p $CIRCLE_TEST_REPORTS/reports
+    - ./node_modules/.bin/eslint . --format junit --output-file $CIRCLE_TEST_REPORTS/reports/eslint.xml
+  override:
+    - yarn test
+  post:
+    - yarn run coverage
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - cp test-results.xml $CIRCLE_TEST_REPORTS/junit/test-results.xml
+
+general:
+  artifacts:
+    - ./coverage
+    - ./test-results.xml
