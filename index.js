@@ -1,5 +1,6 @@
 const express = require('express');
 const winston = require('winston');
+const fs = require('fs');
 
 const app = express();
 
@@ -13,6 +14,15 @@ app.get('/', (req, res) => {
 
 const server = app.listen(PORT, () => {
   winston.info(`Example app listening on port ${PORT}`);
+});
+
+let rawHTML = '';
+fs.readFile('./sample_html.html', 'utf8', (err, data) => {
+    if (err) {
+      winston.error('There was an error trying to read the sample file');
+    }
+    rawHTML = data;
+    winston.info(rawHTML);
 });
 
 module.exports.server = server;
