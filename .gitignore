@@ -1,0 +1,4 @@
+test-results.xml
+yarn.lock
+coverage/
+node_modules/
