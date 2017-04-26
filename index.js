@@ -18,11 +18,11 @@ const server = app.listen(PORT, () => {
 
 let rawHTML = '';
 fs.readFile('./sample_html.html', 'utf8', (err, data) => {
-    if (err) {
-      winston.error('There was an error trying to read the sample file');
-    }
-    rawHTML = data;
-    winston.info(rawHTML);
+  if (err) {
+    winston.error('There was an error trying to read the sample file');
+  }
+  rawHTML = data;
+  winston.info(rawHTML);
 });
 
 module.exports.server = server;
