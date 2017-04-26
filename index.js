@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 8080;
 
 app.get('/', (req, res) => {
   winston.info('Request made to root');
-  res.send('Here4Now backend');
+  res.send('Looplist Challenge');
 });
 
 const server = app.listen(PORT, () => {
