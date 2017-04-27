@@ -1,6 +1,5 @@
 const express = require('express');
-const winston = require('winston');
-const scraper = require('./app/scraper');
+const loopSampleScraper = require('./scrapers/loopSampleScraper');
 
 const app = express();
 
@@ -8,12 +7,12 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.get('/', (req, res) => {
-  winston.info('Request made to root');
   res.send('Looplist Challenge');
 });
 
+// An end point for specifically scraping the Looplist Product Sample website
 app.get('/api/products/:productId', (req, res) => {
-  scraper.scrapeLoopSample(req.params.productId, res);
+  loopSampleScraper.scrape(req.params.productId, res);
 });
 
 const server = app.listen(PORT);

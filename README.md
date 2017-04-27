@@ -1,6 +1,8 @@
 # loop-sample
 
-Source for my Looplist Challenge
+Source for my Looplist Challenge.
+
+
 
 ## Requirements:
 - [x] Make the HTTP request to get the source
@@ -8,8 +10,8 @@ Source for my Looplist Challenge
 - [x] Find a way to parse out the name
 - [x] Find a way to parse out the image(s)
 - [x] Find a way to parse out the product description
-- [ ] Refactor
-- [ ] Get code coverage
+- [x] Refactor
+- [x] Get code coverage
 
 ## For funsies?
 - [ ] Parse out the comments
