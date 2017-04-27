@@ -110,7 +110,7 @@ const scrape = (productId, res) => {
       res.status(resp.statusCode).send(parse(body));
       clear();
     } else {
-      res.status(500).send('There was an internal server error');
+      res.status(500).send({ error: 'Invalid product Id' });
     }
   });
 };
