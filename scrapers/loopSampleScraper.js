@@ -24,7 +24,8 @@ let title = '';
 
 // htmlparser2 runs as a streaming HTML parser
 // This is great because it means that we can typically take what we want in a single pass through
-// the HTML which scales well at O(n)
+// the HTML which scales well at O(n). I could write a multi-pass parser that would arguably
+// be cleaner to read but much less efficient
 //
 // For this specific source, the scraper works by setting state flags which will inform us how to
 // process the incoming text.
@@ -90,21 +91,30 @@ const parser = new htmlparser.Parser({
   },
 }, { decodeEntities: true });
 
+const parse = (body) => {
+  parser.write(body);
+  return { title, name, image, description };
+};
+
+const clear = () => {
+  parser.end();
+};
+
 // We take "res" as a variable here so that we can async respond to the request
 const scrape = (productId, res) => {
   const requestUrl = baseUrl + productId;
-
   // TODO(aaron): Learn more HTTP status codes:
   //              https://httpstatusdogs.com/
   request.get(requestUrl, (err, resp, body) => {
     if (resp && resp.statusCode === 200) {
-      parser.write(body);
-      res.status(resp.statusCode).send({ title, name, image, description });
-      parser.end();
+      res.status(resp.statusCode).send(parse(body));
+      clear();
     } else {
       res.status(500).send('There was an internal server error');
     }
   });
 };
 
+module.exports.parse = parse;
+module.exports.clear = clear;
 module.exports.scrape = scrape;

@@ -1,6 +1,7 @@
 const chai = require('chai');
 const request = require('supertest');
 const app = require('../index');
+const loopSampleScraper = require('../scrapers/loopSampleScraper');
 
 const expect = chai.expect;
 
@@ -18,19 +19,7 @@ describe('Express endpoint tests', () => {
   });
 
   it('succeeds to /api/products/:productId', (done) => {
-    request(server)
-      .get('/api/products/12345')
-      .expect(200)
-      .end((err, res) => {
-        const expectedResponse = { 
-          title: "New Products - Acme", 
-          name: "Acme FPWC-2 fake plastic watering can, 2 gallon, green",
-          image: "http://placekitten.com/g/300/300",
-          description: "A green plastic watering can for a fake Chinese rubber plant in the fake plastic earth.",
-        };
-        expect(res.body).to.deep.equal(expectedResponse);
-        done();
-      });
+    request(server).get('/api/products/12345').expect(200, done);
   });
 
   it('fails to /api/products/:productId', (done) => {
@@ -39,5 +28,70 @@ describe('Express endpoint tests', () => {
 
   it('404 to everything else', (done) => {
     request(server).get('/invalid').expect(404, done);
+  });
+});
+
+describe('Loop parsing tests', () => { 
+  afterEach(() => {
+    loopSampleScraper.clear();
+  });
+
+  it('Empty string returns empty values', (done) => {
+    const expected = {
+      'description': '',
+      'image': '',
+      'name': '',
+      'title': '',
+    };
+    expect(loopSampleScraper.parse('')).to.deep.equal(expected);
+    done();
+  });
+
+  it('Parse title', (done) => {
+    const input = '<title>Testing</title>';
+    const expected = {
+      'description': '',
+      'image': '',
+      'name': '',
+      'title': 'Testing',
+    };
+    expect(loopSampleScraper.parse(input)).to.deep.equal(expected);
+    done();
+  });
+
+  it('Parse image', (done) => {
+    const input = '<img class=product-image-main src=url.jpg>';
+    const expected = {
+      'description': '',
+      'image': 'url.jpg',
+      'name': '',
+      'title': '',
+    };
+    expect(loopSampleScraper.parse(input)).to.deep.equal(expected);
+    done();
+  });
+
+  it('Parse name', (done) => {
+    const input = '<h2 class=product-name>Name</h2>';
+    const expected = {
+      'description': '',
+      'image': '',
+      'name': 'Name',
+      'title': '',
+    };
+    expect(loopSampleScraper.parse(input)).to.deep.equal(expected);
+    done();
+  });
+
+  it('Parse description', (done) => {
+    const input = '<strong>Description:</strong><p>Testing testing</p>';
+    const expected = {
+      'description': 'Testing testing',
+      'image': '',
+      'name': '',
+      'title': '',
+    };
+    expect(loopSampleScraper.parse(input)).to.deep.equal(expected);
+    done();
   });
 });
