@@ -53,6 +53,19 @@ const parser = new htmlparser.Parser({
       lookingForDescriptionParagraph = false;
     }
   },
+
+  onend: () => {
+    lookingForDescriptionParagraph = false;
+    onDescriptionHeader = false;
+    onDescriptionParagraph = false;
+    onName = false;
+    onTitle = false;
+
+    description = '';
+    image = '';
+    name = '';
+    title = '';
+  },
 }, { decodeEntities: true });
 
 const scrapeLoopSample = (productId, res) => {
@@ -60,12 +73,12 @@ const scrapeLoopSample = (productId, res) => {
   request.get(requestUrl, (err, resp, body) => {
     if (resp && resp.statusCode === 200) {
       parser.write(body);
+      parser.end();
       res.status(resp.statusCode).send({ title, name, image, description });
     } else {
-      res.status(500).send('There was an internal server failure');
+      res.status(500).send('There was an internal server error');
     }
   });
 };
 
-module.exports.parser = parser;
 module.exports.scrapeLoopSample = scrapeLoopSample;
