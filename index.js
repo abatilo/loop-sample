@@ -19,19 +19,18 @@ const htmlparser = require('htmlparser2');
 
 /* module.exports.server = server; */
 
-let onTitle                        = false;
-let onImg                          = false;
-let onName                         = false;
-let onDescriptionHeader            = false;
+let onTitle = false;
+let onName = false;
+let onDescriptionHeader = false;
 let lookingForDescriptionParagraph = false;
-let onDescriptionParagraph         = false;
+let onDescriptionParagraph = false;
 
 const parser = new htmlparser.Parser({
   onopentag: (name, attribs) => {
     if (name === 'title') {
       onTitle = true;
     } else if (name === 'img' && attribs.class === 'product-image-main') {
-      winston.info("image: ", attribs.src);
+      winston.info('image: ', attribs.src);
     } else if (name === 'h2' && attribs.class === 'product-name') {
       onName = true;
     } else if (name === 'strong') {
@@ -43,20 +42,20 @@ const parser = new htmlparser.Parser({
 
   ontext: (text) => {
     if (onTitle) {
-      winston.info("title: ", text);
+      winston.info('title: ', text);
     } else if (onName) {
-      winston.info("name: ", text);
+      winston.info('name: ', text);
     } else if (onDescriptionHeader && text === 'Description:') {
       lookingForDescriptionParagraph = true;
     } else if (onDescriptionParagraph) {
-      winston.info("description: ", text);
+      winston.info('description: ', text);
     }
   },
 
   onclosetag: (name) => {
     if (name === 'title') {
       onTitle = false;
-    } else if (name == 'h2' && onName) {
+    } else if (name === 'h2' && onName) {
       onName = false;
     } else if (name === 'strong' && onDescriptionHeader) {
       onDescriptionHeader = false;
@@ -77,4 +76,3 @@ fs.readFile('./sample_html.html', 'utf8', (err, data) => {
   parser.write(rawHTML);
   parser.end();
 });
-
