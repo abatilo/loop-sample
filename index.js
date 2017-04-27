@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/products/:productId', (req, res) => {
-  res.status(200).send(scraper.scrapeLoopSample(req.params.productId));
+  scraper.scrapeLoopSample(req.params.productId, res);
 });
 
 const server = app.listen(PORT);
