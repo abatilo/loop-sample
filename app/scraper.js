@@ -1,4 +1,7 @@
+const request = require('request-promise');
 const htmlparser = require('htmlparser2');
+
+const baseUrl = 'https://looplist-product-sample.herokuapp.com/products/';
 
 let lookingForDescriptionParagraph = false;
 let onDescriptionHeader = false;
@@ -52,9 +55,16 @@ const parser = new htmlparser.Parser({
   },
 }, { decodeEntities: true });
 
-const scrapeLoopSample = (body) => {
-  parser.write(body);
-  return { title, name, image, description };
+const scrapeLoopSample = (productId, res) => {
+  const requestUrl = baseUrl + productId;
+  request.get(requestUrl, (err, resp, body) => {
+    if (resp && resp.statusCode === 200) {
+      parser.write(body);
+      res.status(resp.statusCode).send({ title, name, image, description });
+    } else {
+      res.status(500).send('There was an internal server failure');
+    }
+  });
 };
 
 module.exports.parser = parser;
