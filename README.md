@@ -3,11 +3,13 @@
 Source for my Looplist Challenge
 
 ## Requirements:
-- [ ] Make the HTTP request to get the source
-- [ ] Find a way to parse out the title
-- [ ] Find a way to parse out the name
-- [ ] Find a way to parse out the image(s)
-- [ ] Find a way to parse out the product description
+- [x] Make the HTTP request to get the source
+- [x] Find a way to parse out the title
+- [x] Find a way to parse out the name
+- [x] Find a way to parse out the image(s)
+- [x] Find a way to parse out the product description
+- [ ] Refactor
+- [ ] Get code coverage
 
 ## For funsies?
 - [ ] Parse out the comments

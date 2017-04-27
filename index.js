@@ -1,30 +1,36 @@
 const express = require('express');
 const winston = require('winston');
 const htmlparser = require('htmlparser2');
-const request = require('request');
+const request = require('request-promise');
 
 const app = express();
 
 // Let Heroku decide the port number to use
 const PORT = process.env.PORT || 8080;
 
-let onTitle = false;
-let onName = false;
-let onDescriptionHeader = false;
 let lookingForDescriptionParagraph = false;
+let onDescriptionHeader = false;
 let onDescriptionParagraph = false;
+let onName = false;
+let onTitle = false;
+
+let description = '';
+let image = '';
+let name = '';
+let title = '';
 
 const parser = new htmlparser.Parser({
-  onopentag: (name, attribs) => {
-    if (name === 'title') {
+  onopentag: (tagName, attribs) => {
+    if (tagName === 'title') {
       onTitle = true;
-    } else if (name === 'img' && attribs.class === 'product-image-main') {
+    } else if (tagName === 'img' && attribs.class === 'product-image-main') {
       winston.info('image: ', attribs.src);
-    } else if (name === 'h2' && attribs.class === 'product-name') {
+      image = attribs.src;
+    } else if (tagName === 'h2' && attribs.class === 'product-name') {
       onName = true;
-    } else if (name === 'strong') {
+    } else if (tagName === 'strong') {
       onDescriptionHeader = true;
-    } else if (lookingForDescriptionParagraph && name === 'p') {
+    } else if (lookingForDescriptionParagraph && tagName === 'p') {
       onDescriptionParagraph = true;
     }
   },
@@ -32,23 +38,26 @@ const parser = new htmlparser.Parser({
   ontext: (text) => {
     if (onTitle) {
       winston.info('title: ', text);
+      title = text;
     } else if (onName) {
       winston.info('name: ', text);
+      name = text;
     } else if (onDescriptionHeader && text === 'Description:') {
       lookingForDescriptionParagraph = true;
     } else if (onDescriptionParagraph) {
       winston.info('description: ', text);
+      description = text;
     }
   },
 
-  onclosetag: (name) => {
-    if (name === 'title') {
+  onclosetag: (tagName) => {
+    if (tagName === 'title') {
       onTitle = false;
-    } else if (name === 'h2' && onName) {
+    } else if (tagName === 'h2' && onName) {
       onName = false;
-    } else if (name === 'strong' && onDescriptionHeader) {
+    } else if (tagName === 'strong' && onDescriptionHeader) {
       onDescriptionHeader = false;
-    } else if (name === 'p' && lookingForDescriptionParagraph) {
+    } else if (tagName === 'p' && lookingForDescriptionParagraph) {
       onDescriptionParagraph = false;
       lookingForDescriptionParagraph = false;
     }
@@ -63,18 +72,15 @@ app.get('/', (req, res) => {
 app.get('/api/products/:productId', (req, res) => {
   const baseUrl = 'https://looplist-product-sample.herokuapp.com/products/';
   const requestUrl = baseUrl + req.params.productId;
-  request(requestUrl, (error, response, body) => {
-    if (response && response.statusCode === 200) {
+  request.get(requestUrl, (err, resp, body) => {
+    if (resp && resp.statusCode === 200) {
       parser.write(body);
-      parser.end();
+      res.status(resp.statusCode).send({ title, name, image, description });
+    } else {
+      res.status(resp.statusCode).send('There was an internal server failure');
     }
   });
-  res.status(200).send(`Received: ${req.params.productId} \n`);
 });
 
-const server = app.listen(PORT, () => {
-  winston.info(`Example app listening on port ${PORT}`);
-});
-
+const server = app.listen(PORT);
 module.exports.server = server;
-
