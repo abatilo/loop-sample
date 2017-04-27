@@ -1,23 +1,27 @@
-/* const express = require('express'); */
+const express = require('express');
 const winston = require('winston');
 const fs = require('fs');
 const htmlparser = require('htmlparser2');
 
-/* const app = express(); */
+const app = express();
 
 // Let Heroku decide the port number to use
-/* const PORT = process.env.PORT || 8080; */
+const PORT = process.env.PORT || 8080;
 
-/* app.get('/', (req, res) => { */
-/*   winston.info('Request made to root'); */
-/*   res.send('Looplist Challenge'); */
-/* }); */
+app.get('api/products/:productId', (req, res) => {
+  res.send('Received: ', req.params.productId);
+});
 
-/* const server = app.listen(PORT, () => { */
-/*   winston.info(`Example app listening on port ${PORT}`); */
-/* }); */
+app.get('/', (req, res) => {
+  winston.info('Request made to root');
+  res.send('Looplist Challenge');
+});
 
-/* module.exports.server = server; */
+const server = app.listen(PORT, () => {
+  winston.info(`Example app listening on port ${PORT}`);
+});
+
+module.exports.server = server;
 
 let onTitle = false;
 let onName = false;
