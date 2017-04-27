@@ -1,8 +1,14 @@
 # loop-sample
 
+[![CircleCI](https://circleci.com/gh/abatilo/loop-sample.svg?style=svg)](https://circleci.com/gh/abatilo/loop-sample)
+
 Source for my Looplist Challenge.
 
-
+This application has a defined endpoint that will scrape information from a provided url.
+The routes are defined in `./index.js` and the code is split up such that we keep the scraping
+logic for different sources separate from each other. This is important because the nature of
+web scraping is that it's not very reliable, so we want to make it extremely easy to isolate and
+modify the logic for different websites.
 
 ## Requirements:
 - [x] Make the HTTP request to get the source
