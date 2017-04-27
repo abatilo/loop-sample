@@ -99,8 +99,8 @@ const scrape = (productId, res) => {
   request.get(requestUrl, (err, resp, body) => {
     if (resp && resp.statusCode === 200) {
       parser.write(body);
-      parser.end();
       res.status(resp.statusCode).send({ title, name, image, description });
+      parser.end();
     } else {
       res.status(500).send('There was an internal server error');
     }

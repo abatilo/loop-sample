@@ -1,6 +1,6 @@
 # loop-sample
 
-[![CircleCI](https://circleci.com/gh/abatilo/loop-sample.svg?style=svg)](https://circleci.com/gh/abatilo/loop-sample)
+[[Build](https://circleci.com/gh/abatilo/loop-sample.svg?style=svg)](https://circleci.com/gh/abatilo/loop-sample)
 
 Source for my Looplist Challenge.
 
