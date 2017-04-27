@@ -17,6 +17,10 @@ describe('Express endpoint tests', () => {
     request(server).get('/').expect(200, done);
   });
 
+  it('responds to /api/products/:productId', (done) => {
+    request(server).get('/api/products/1').expect(200, done);
+  });
+
   it('404 to everything else', (done) => {
     request(server).get('/invalid').expect(404, done);
   });

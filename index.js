@@ -2,19 +2,28 @@ const express = require('express');
 const winston = require('winston');
 const fs = require('fs');
 const htmlparser = require('htmlparser2');
+const request = require('request');
 
 const app = express();
 
 // Let Heroku decide the port number to use
 const PORT = process.env.PORT || 8080;
 
-app.get('api/products/:productId', (req, res) => {
-  res.send('Received: ', req.params.productId);
-});
-
 app.get('/', (req, res) => {
   winston.info('Request made to root');
   res.send('Looplist Challenge');
+});
+
+app.get('/api/products/:productId', (req, res) => {
+  const baseUrl = 'https://looplist-product-sample.herokuapp.com/products/';
+  const requestUrl = baseUrl + req.params.productId;
+  request(requestUrl, (error, response, body) => {
+    if (response && response.statusCode == 200) {
+      parser.write(body);
+      parser.end();
+    }
+  });
+  res.status(200).send('Received: ' + req.params.productId + '\n');
 });
 
 const server = app.listen(PORT, () => {
@@ -69,14 +78,3 @@ const parser = new htmlparser.Parser({
     }
   },
 }, { decodeEntities: true });
-
-let rawHTML = '';
-fs.readFile('./sample_html.html', 'utf8', (err, data) => {
-  if (err) {
-    winston.error('There was an error trying to read the sample file');
-  }
-  rawHTML = data;
-
-  parser.write(rawHTML);
-  parser.end();
-});
